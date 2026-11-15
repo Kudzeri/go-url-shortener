@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/Kudzeri/go-url-shortener/iternal/config"
+	"github.com/Kudzeri/go-url-shortener/iternal/lib/logger/sl"
+	"github.com/Kudzeri/go-url-shortener/iternal/storage/sqlite"
 )
 
 const (
@@ -18,9 +20,15 @@ func main() {
 
 	log := setupLogger(cfg.Env)
 
-	log.Info("starting url-shortener")
+	log.Info("starting url-shortener", slog.String("env", cfg.Env))
 
-	//TODO: init storage: PostgreSQL (с драйвером jackc/pgx), Redis
+	storage, err := sqlite.New(cfg.StoragePath)
+	if err != nil {
+		log.Error("error to init storage", sl.Err(err))
+		os.Exit(1)
+	}
+
+	_ = storage
 
 	//TODO: init router: gin-gonic/gin
 
@@ -32,7 +40,7 @@ func setupLogger(env string) *slog.Logger {
 	switch env {
 	case envLocal:
 		log = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-			AddSource:   true,
+			AddSource:   false,
 			Level:       slog.LevelDebug,
 			ReplaceAttr: nil,
 		}))
