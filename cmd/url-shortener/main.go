@@ -6,7 +6,10 @@ import (
 
 	"github.com/Kudzeri/go-url-shortener/iternal/config"
 	"github.com/Kudzeri/go-url-shortener/iternal/lib/logger/sl"
+	"github.com/Kudzeri/go-url-shortener/iternal/middleware/requestlog"
 	"github.com/Kudzeri/go-url-shortener/iternal/storage/sqlite"
+	"github.com/gin-contrib/requestid"
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -18,7 +21,7 @@ const (
 func main() {
 	cfg := config.MustLoad()
 
-	log := setupLogger(cfg.Env)
+	log := sl.New(cfg.Env)
 
 	log.Info("starting url-shortener", slog.String("env", cfg.Env))
 
@@ -28,33 +31,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	//TODO: init router: gin-gonic/gin
+	router := gin.New()
+
+	//middleware
+	router.Use(requestid.New(), requestlog.New(log))
 
 	//TODO: run server:
-}
-
-func setupLogger(env string) *slog.Logger {
-	var log *slog.Logger
-	switch env {
-	case envLocal:
-		log = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-			AddSource:   false,
-			Level:       slog.LevelDebug,
-			ReplaceAttr: nil,
-		}))
-	case envDev:
-		log = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			AddSource:   true,
-			Level:       slog.LevelDebug,
-			ReplaceAttr: nil,
-		}))
-	case envProd:
-		log = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			AddSource:   false,
-			Level:       slog.LevelInfo,
-			ReplaceAttr: nil,
-		}))
-	}
-
-	return log
 }
