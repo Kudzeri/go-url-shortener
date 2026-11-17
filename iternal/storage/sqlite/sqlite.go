@@ -41,6 +41,7 @@ func New(dbPath string) (*Storage, error) {
 	return &Storage{db: db}, nil
 }
 
+// TODO: implement Alias validation
 func (s *Storage) SaveURL(urlToSave string, alias string) (int64, error) {
 	const op = "storage.sqlite.SaveURL"
 
