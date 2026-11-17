@@ -16,11 +16,11 @@ func New(log *slog.Logger) gin.HandlerFunc {
 		c.Next()
 
 		log.InfoContext(c.Request.Context(), "HTTP request",
-			slog.String("request_id", requestID),
 			slog.String("method", c.Request.Method),
 			slog.String("path", c.Request.URL.Path),
 			slog.Int("status", c.Writer.Status()),
 			slog.Duration("duration", time.Since(started)),
+			slog.String("request_id", requestID),
 		)
 
 		if len(c.Errors) > 0 {

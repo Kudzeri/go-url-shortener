@@ -2,20 +2,16 @@ package main
 
 import (
 	"log/slog"
+	"net/http"
 	"os"
 
 	"github.com/Kudzeri/go-url-shortener/iternal/config"
+	"github.com/Kudzeri/go-url-shortener/iternal/http-server/handlers/url/save"
+	"github.com/Kudzeri/go-url-shortener/iternal/http-server/middleware/requestlog"
 	"github.com/Kudzeri/go-url-shortener/iternal/lib/logger/sl"
-	"github.com/Kudzeri/go-url-shortener/iternal/middleware/requestlog"
 	"github.com/Kudzeri/go-url-shortener/iternal/storage/sqlite"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
-)
-
-const (
-	envLocal = "local"
-	envDev   = "dev"
-	envProd  = "prod"
 )
 
 func main() {
@@ -27,7 +23,7 @@ func main() {
 
 	storage, err := sqlite.New(cfg.StoragePath)
 	if err != nil {
-		log.Error("error to init storage", sl.Err(err))
+		log.Error("error to init storage", sl.Error(err))
 		os.Exit(1)
 	}
 
@@ -35,6 +31,14 @@ func main() {
 
 	//middleware
 	router.Use(requestid.New(), requestlog.New(log))
+	router.Use(gin.Recovery())
 
-	//TODO: run server:
+	router.Handle(http.MethodGet, "/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "pong",
+		})
+	})
+	router.Handle(http.MethodPost, "/url", save.New(log, storage))
+
+	router.Run(cfg.Addr)
 }
