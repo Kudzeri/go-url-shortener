@@ -1,0 +1,8 @@
+dir: '{{.InterfaceDir}}'
+filename: mock_url_saver_test.go
+pkgname: '{{.SrcPackageName}}'
+template: testify
+packages:
+  github.com/Kudzeri/go-url-shortener/iternal/http-server/handlers/url/save:
+    interfaces:
+      URLSaver: {}
