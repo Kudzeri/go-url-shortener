@@ -1,6 +1,7 @@
 package requestlog
 
 import (
+	"fmt"
 	"log/slog"
 	"time"
 
@@ -19,7 +20,7 @@ func New(log *slog.Logger) gin.HandlerFunc {
 			slog.String("method", c.Request.Method),
 			slog.String("path", c.Request.URL.Path),
 			slog.Int("status", c.Writer.Status()),
-			slog.Duration("duration", time.Since(started)),
+			slog.String("duration", fmt.Sprintf("%.2fs", time.Since(started).Seconds())),
 			slog.String("request_id", requestID),
 		)
 
