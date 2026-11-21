@@ -34,10 +34,6 @@ const aliasLength = 6
 //go:generate go run github.com/vektra/mockery/v3@v3.9.1
 
 func New(log *slog.Logger, urlSaver URLSaver) gin.HandlerFunc {
-	return newHandler(log, urlSaver, random.NewRandomString)
-}
-
-func newHandler(log *slog.Logger, urlSaver URLSaver, generateAlias func(int) (string, error)) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		const op = "handlers.url.save.New"
 
@@ -62,7 +58,7 @@ func newHandler(log *slog.Logger, urlSaver URLSaver, generateAlias func(int) (st
 		alias := req.Alias
 		if alias == "" {
 			var err error
-			alias, err = generateAlias(aliasLength)
+			alias, err = random.NewRandomString(aliasLength)
 			if err != nil {
 				log.Error("failed to generate alias", sl.Error(err))
 				c.JSON(http.StatusInternalServerError, resp.Error("Внутренняя ошибка сервера"))

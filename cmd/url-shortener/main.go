@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/Kudzeri/go-url-shortener/iternal/config"
+	"github.com/Kudzeri/go-url-shortener/iternal/http-server/handlers/url/redirect"
 	"github.com/Kudzeri/go-url-shortener/iternal/http-server/handlers/url/save"
 	"github.com/Kudzeri/go-url-shortener/iternal/http-server/middleware/requestlog"
 	"github.com/Kudzeri/go-url-shortener/iternal/lib/logger/sl"
@@ -39,6 +40,8 @@ func main() {
 		})
 	})
 	router.Handle(http.MethodPost, "/url", save.New(log, storage))
+	router.Handle(http.MethodGet, "/{alias}", redirect.New(log, storage))
+
 	srv := &http.Server{
 		Addr:         cfg.Addr,
 		Handler:      router,
@@ -47,7 +50,10 @@ func main() {
 		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
 	}
 
-	log.Info("starting server", slog.String("addr", srv.Addr))
+	log.Info(
+		"starting server",
+		slog.String("addr", srv.Addr),
+	)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Error("server failed", sl.Error(err))
 		os.Exit(1)
