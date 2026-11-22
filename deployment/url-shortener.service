@@ -1,0 +1,15 @@
+[Unit]
+Description=URL Shortener
+After=network.target
+
+[Service]
+WorkingDirectory=/root/apps/url-shortener
+EnvironmentFile=/root/apps/url-shortener/config.env
+ExecStart=/root/apps/url-shortener/url-shortener
+Restart=always
+RestartSec=4
+StandardOutput=inherit
+EnvironmentFile=/root/apps/url-shortener/config.env
+
+[Install]
+WantedBy=multi-user.target
