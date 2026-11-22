@@ -46,7 +46,7 @@ func main() {
 	}, "url-shortener")
 
 	protected := router.Group("/url", auth)
-	protected.Handle(http.MethodPost, "/", save.New(log, storage))
+	protected.Handle(http.MethodPost, "", save.New(log, storage))
 	protected.Handle(http.MethodDelete, "/:alias", urlDelete.New(log, storage))
 
 	router.Handle(http.MethodGet, "url/:alias", urlRedirect.New(log, storage))

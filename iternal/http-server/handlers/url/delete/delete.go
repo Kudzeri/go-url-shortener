@@ -15,10 +15,10 @@ type URLDeleter interface {
 }
 
 func New(log *slog.Logger, urlDeleter URLDeleter) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		const op = "handlers.url.delete.New"
-		log = log.With(slog.String("op", op))
+	const op = "handlers.url.delete.New"
+	log = log.With(slog.String("op", op))
 
+	return func(ctx *gin.Context) {
 		alias := ctx.Param("alias")
 		if alias == "" {
 			log.Info("no alias provided")
@@ -38,6 +38,6 @@ func New(log *slog.Logger, urlDeleter URLDeleter) gin.HandlerFunc {
 			return
 		}
 
-		ctx.Status(http.StatusNoContent)
+		ctx.JSON(http.StatusNoContent, resp.OK())
 	}
 }

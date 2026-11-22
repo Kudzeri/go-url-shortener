@@ -15,10 +15,10 @@ type URLGetter interface {
 }
 
 func New(log *slog.Logger, urlGetter URLGetter) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		const op = "handlers.url.redirect.New"
-		log = log.With(slog.String("op", op))
+	const op = "handlers.url.redirect.New"
+	log = log.With(slog.String("op", op))
 
+	return func(ctx *gin.Context) {
 		alias := ctx.Param("alias")
 		if alias == "" {
 			log.Info("no alias provided")

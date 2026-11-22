@@ -49,7 +49,7 @@ func New(log *slog.Logger, urlSaver URLSaver) gin.HandlerFunc {
 				return
 			}
 
-			c.JSON(http.StatusBadRequest, resp.Error("Ожидается корректный JSON с полями нужных типов"))
+			c.JSON(http.StatusBadRequest, resp.Error("waiting correct json format"))
 			return
 		}
 
@@ -61,7 +61,7 @@ func New(log *slog.Logger, urlSaver URLSaver) gin.HandlerFunc {
 			alias, err = random.NewRandomString(aliasLength)
 			if err != nil {
 				log.Error("failed to generate alias", sl.Error(err))
-				c.JSON(http.StatusInternalServerError, resp.Error("Внутренняя ошибка сервера"))
+				c.JSON(http.StatusInternalServerError, resp.Error("iternal server error"))
 				return
 			}
 		}
