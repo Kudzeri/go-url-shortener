@@ -17,7 +17,6 @@ type URLGetter interface {
 func New(log *slog.Logger, urlGetter URLGetter) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		const op = "handlers.url.redirect.New"
-
 		log = log.With(slog.String("op", op))
 
 		alias := ctx.Param("alias")

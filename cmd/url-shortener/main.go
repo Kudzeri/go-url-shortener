@@ -6,7 +6,8 @@ import (
 	"os"
 
 	"github.com/Kudzeri/go-url-shortener/iternal/config"
-	"github.com/Kudzeri/go-url-shortener/iternal/http-server/handlers/url/redirect"
+	urlDelete "github.com/Kudzeri/go-url-shortener/iternal/http-server/handlers/url/delete"
+	urlRedirect "github.com/Kudzeri/go-url-shortener/iternal/http-server/handlers/url/redirect"
 	"github.com/Kudzeri/go-url-shortener/iternal/http-server/handlers/url/save"
 	"github.com/Kudzeri/go-url-shortener/iternal/http-server/middleware/requestlog"
 	"github.com/Kudzeri/go-url-shortener/iternal/lib/logger/sl"
@@ -39,8 +40,16 @@ func main() {
 			"message": "pong",
 		})
 	})
-	router.Handle(http.MethodPost, "/url", save.New(log, storage))
-	router.Handle(http.MethodGet, "/{alias}", redirect.New(log, storage))
+
+	auth := gin.BasicAuthForRealm(gin.Accounts{
+		cfg.HTTPServer.User: cfg.HTTPServer.Password,
+	}, "url-shortener")
+
+	protected := router.Group("/url", auth)
+	protected.Handle(http.MethodPost, "/", save.New(log, storage))
+	protected.Handle(http.MethodDelete, "/:alias", urlDelete.New(log, storage))
+
+	router.Handle(http.MethodGet, "url/:alias", urlRedirect.New(log, storage))
 
 	srv := &http.Server{
 		Addr:         cfg.Addr,
